@@ -2,7 +2,7 @@
 
 CURRENT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-#LINUX_USER=cysnake4713
+LINUX_USER=cysnake4713
 
 #HTTP_PROXY=192.168.0.101:8087
 
@@ -11,16 +11,21 @@ OPENERP_DB_HOST=localhost
 OPENERP_DB_PORT=5432
 
 PYTHON_ENV_ROOT=$HOME/pythonenv
-PYTHON_ENV_NAME=la-erp
+PYTHON_ENV_NAME=la
 
 SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil'
 
+ODOO_SERVICE_NAME=odooserver
 ODOO_ORIGIN_PATH=${CURRENT_DIR}/odoo
 ODOO_ROOT=${PYTHON_ENV_ROOT}/${PYTHON_ENV_NAME}/odoo
+ODOO_DAEMON=${ODOO_ROOT}/openerp-server
+ODOO_CONFIG_DIR=/etc/openerp
+ODOO_CONFIG=${ODOO_CONFIG_DIR}/openerp-server.conf
+ODOO_LOGFILE_DIR=/var/log/openerp
+ODOO_LOGFILE=${ODOO_LOGFILE_DIR}/openerp-server.log
+
 
 PYTHON_ENV_PATH=${PYTHON_ENV_ROOT}/${PYTHON_ENV_NAME}
-
-
 
 # Install Dependence
 echo '------Installing Dependence------'
@@ -129,8 +134,6 @@ if [ ${result} == 'y' ]; then
     # install odoo
     echo '------Installing Odoo------'
     cd ${PYTHON_ENV_PATH}/odoo/
-    #TODO:
-    mkdir $HOME/openerp-log
     python setup.py build
     python setup.py install
     echo 'complete......'
@@ -138,14 +141,49 @@ fi
 echo ''
 
 # generate odoo config file
-read -p "want create or recreate odoo config file ~/.openerp_serverrc?:y/n " result
+read -p "want create or recreate odoo config file ${ODOO_CONFIG}?:y/n " result
 if [ ${result} == 'y' ]; then
     echo '------Generate Odoo Config File------'
     #TODO: --data-dir
     read -p "Please input openerp database User password:" result
-    openerp-server -s --addons-path=${PYTHON_ENV_PATH}/odoo/addons --logfile=$HOME/openerp-log/openerp.log --logrotate --db_user=${OPENERP_DB_USER} --db_password=${result} --db_host=${OPENERP_DB_HOST} --db_port=${OPENERP_DB_PORT} --stop-after-init
+    openerp-server -s --addons-path=${PYTHON_ENV_PATH}/odoo/addons --logrotate --db_user=${OPENERP_DB_USER} --db_password=${result} --db_host=${OPENERP_DB_HOST} --db_port=${OPENERP_DB_PORT} --stop-after-init
+    if [ ! -d '${ODOO_CONFIG_DIR}' ]; then
+        sudo mkdir ${ODOO_CONFIG_DIR}
+        sudo chown ${LINUX_USER} ${ODOO_CONFIG_DIR}
+        sudo chgrp ${LINUX_USER} ${ODOO_CONFIG_DIR}
+    fi
+    sudo cp -f ${HOME}/.openerp_serverrc ${ODOO_CONFIG}
+    sudo chown ${LINUX_USER} ${ODOO_CONFIG}
+    sudo chgrp ${LINUX_USER} ${ODOO_CONFIG}
+    if [ ! -d '${ODOO_LOGFILE_DIR}' ]; then
+        sudo mkdir ${ODOO_LOGFILE_DIR}
+        sudo chown ${LINUX_USER} ${ODOO_LOGFILE_DIR}
+        sudo chgrp ${LINUX_USER} ${ODOO_LOGFILE_DIR}
+    fi
     echo 'complete......'
 fi
 echo ''
+
 # Create Odoo Service
+echo "LINUX_USER: ${LINUX_USER}"
+echo "ODOO_SERVICE_NAME: ${ODOO_SERVICE_NAME}"
+echo "ODOO_DAEMON: ${ODOO_DAEMON}"
+echo "ODOO_CONFIG: ${ODOO_CONFIG}"
+echo "ODOO_LOGFILE: ${ODOO_LOGFILE}"
+read -p "want create or recreate odoo service?:y/n " result
+if [ ${result} == 'y' ]; then
+    sudo sed \
+    -e "s@%{DAEMON}@${ODOO_DAEMON}@g" \
+    -e "s@%{CONFIG}@${ODOO_CONFIG}@g" \
+    -e "s@%{LOGFILE}@${ODOO_LOGFILE}@g" \
+    -e "s@%{USER}@${LINUX_USER}@g" \
+    -e "s@%{PYTHON_ENV_PATH}@${PYTHON_ENV_PATH}/bin/activate@g" \
+    -e "s@%{SERVICE_NAME}@${ODOO_SERVICE_NAME}@g" \
+    ${CURRENT_DIR}/lib/openerp | sudo tee /etc/init.d/${ODOO_SERVICE_NAME} > /dev/null
+    sudo chmod +x /etc/init.d/${ODOO_SERVICE_NAME}
+#    sudo update-rc.d ${ODOO_SERVICE_NAME} defaults
+    echo 'complete......'
+fi
+
+
 

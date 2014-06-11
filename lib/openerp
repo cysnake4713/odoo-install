@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+### BEGIN INIT INFO
+# Provides:		openerp-server
+# Required-Start:	$remote_fs $syslog
+# Required-Stop:	$remote_fs $syslog
+# Should-Start:		$network
+# Should-Stop:		$network
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Enterprise Resource Management software
+# Description:		Open ERP is a complete ERP and CRM software.
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=%{DAEMON}
+NAME=odoo-server
+DESC=odoo-server
+CONFIG=%{CONFIG}
+LOGFILE=%{LOGFILE}
+USER=%{USER}
+PYTHON_ENV_PATH=%{PYTHON_ENV_PATH}
+SERVICE_NAME=%{SERVICE_NAME}
+
+test -x ${DAEMON} || exit 0
+
+set -e
+source ${PYTHON_ENV_PATH}
+
+do_start () {
+
+    echo -n "Starting ${DESC}: "
+    start-stop-daemon --start --quiet --pidfile /var/run/${NAME}.pid --chuid ${USER} --background --make-pidfile --exec ${DAEMON} -- --config=${CONFIG} --logfile=${LOGFILE}
+    echo "${NAME}."
+}
+
+do_stop () {
+    echo -n "Stopping ${DESC}: "
+    start-stop-daemon --stop --quiet --pidfile /var/run/${NAME}.pid --oknodo
+    echo "${NAME}."
+}
+
+case "${1}" in
+    start)
+        do_start
+        ;;
+
+    stop)
+        do_stop
+        ;;
+
+    restart|force-reload)
+        echo -n "Restarting ${DESC}: "
+        do_stop
+        sleep 1
+        do_start
+        ;;
+
+    status)
+        cat /var/run/${NAME}.pid | xargs ps -p
+        ;;
+    *)
+        N=/etc/init.d/${NAME}
+        echo "Usage: ${NAME} {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
