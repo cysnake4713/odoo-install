@@ -6,17 +6,18 @@ LINUX_USER=cysnake4713
 
 #HTTP_PROXY=192.168.0.101:8087
 
-OPENERP_DB_USER=openerpuser
+OPENERP_DB_USER=openerp_updis
 OPENERP_DB_HOST=localhost
-OPENERP_DB_PORT=5432
+OPENERP_DB_PORT=5433
 
 PYTHON_ENV_ROOT=$HOME/pythonenv
-PYTHON_ENV_NAME=la
+PYTHON_ENV_NAME=la-erp
 
 SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil'
 
 ODOO_SERVICE_NAME=odooserver
-ODOO_ORIGIN_PATH=${CURRENT_DIR}/odoo
+ODOO_ORIGIN_PATH=/home/cysnake4713/githome/odoo
+#ODOO_ORIGIN_PATH=${CURRENT_DIR}/odoo
 ODOO_ROOT=${PYTHON_ENV_ROOT}/${PYTHON_ENV_NAME}/odoo
 ODOO_DAEMON=${ODOO_ROOT}/openerp-server
 ODOO_CONFIG_DIR=/etc/openerp
@@ -29,7 +30,7 @@ PYTHON_ENV_PATH=${PYTHON_ENV_ROOT}/${PYTHON_ENV_NAME}
 
 # Install Dependence
 echo '------Installing Dependence------'
-sudo apt-get -y -qq install libpq-dev python-dev libldap2-dev libsasl2-dev libssl-dev libxml2 libxml2-dev libxslt1-dev python-virtualenv git
+sudo apt-get -y -qq install libgeoip-dev libpq-dev python-dev libldap2-dev libsasl2-dev libssl-dev libxml2 libxml2-dev libxslt1-dev python-virtualenv git
 echo "------complete------"
 echo ''
 
@@ -128,7 +129,7 @@ read -p "want install or reinstall odoo?:y/n " result
 if [ ${result} == 'y' ]; then
     # install dependence
     echo '------Install External Python Egg------'
-    easy_install egenix-mx-base
+    easy_install egenix-mx-base geoip
     pip install ${SEPERATE_PIP_INSTALL}
     echo 'complete......'
     # install odoo
@@ -184,6 +185,8 @@ if [ ${result} == 'y' ]; then
 #    sudo update-rc.d ${ODOO_SERVICE_NAME} defaults
     echo 'complete......'
 fi
+
+#TODO: Install whkhtmltopdf
 
 
 
