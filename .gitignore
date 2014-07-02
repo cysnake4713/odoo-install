@@ -2,3 +2,5 @@
 odoo
 atlassian-ide-plugin.xml
 wkhtmltox
+lib/install_xoe
+.idea

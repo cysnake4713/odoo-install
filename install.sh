@@ -13,7 +13,7 @@ OPENERP_DB_PORT=5433
 PYTHON_ENV_ROOT=$HOME/pythonenv
 PYTHON_ENV_NAME=la-erp
 
-SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil'
+SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil geoip'
 
 ODOO_SERVICE_NAME=odooserver
 ODOO_ORIGIN_PATH=/home/cysnake4713/githome/odoo
@@ -129,7 +129,7 @@ read -p "want install or reinstall odoo?:y/n " result
 if [ ${result} == 'y' ]; then
     # install dependence
     echo '------Install External Python Egg------'
-    easy_install egenix-mx-base geoip
+    easy_install egenix-mx-base geoip pyPdf
     pip install ${SEPERATE_PIP_INSTALL}
     echo 'complete......'
     # install odoo
