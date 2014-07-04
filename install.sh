@@ -30,7 +30,7 @@ PYTHON_ENV_PATH=${PYTHON_ENV_ROOT}/${PYTHON_ENV_NAME}
 
 # Install Dependence
 echo '------Installing Dependence------'
-sudo apt-get -y -qq install libgeoip-dev libpq-dev python-dev libldap2-dev libsasl2-dev libssl-dev libxml2 libxml2-dev libxslt1-dev python-virtualenv git
+sudo apt-get -y -qq install libgeoip-dev libpq-dev python-dev libldap2-dev libsasl2-dev libssl-dev libxml2 libxml2-dev libxslt1-dev python-virtualenv git libtiff4-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev python-tk
 echo "------complete------"
 echo ''
 
