@@ -134,7 +134,7 @@ if [ ${result} == 'y' ]; then
     echo 'complete......'
     # install odoo
     echo '------Installing Odoo------'
-    cd ${PYTHON_ENV_PATH}/odoo/
+    cd ${ODOO_ROOT}
     python setup.py build
     python setup.py install
     echo 'complete......'
