@@ -13,7 +13,7 @@ OPENERP_DB_PORT=5433
 PYTHON_ENV_ROOT=$HOME/pythonenv
 PYTHON_ENV_NAME=la-erp
 
-SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil geoip'
+SEPERATE_PIP_INSTALL='pydot feedparser psycopg2 psutil geoip pypdf egenix-mx-base'
 
 ODOO_SERVICE_NAME=odooserver
 ODOO_ORIGIN_PATH=/home/cysnake4713/githome/odoo
@@ -85,6 +85,7 @@ echo "Target ODOO_ROOT: ${ODOO_ROOT}"
 read -p "copy odoo code?:y/n " result
 if [ ${result} == 'y' ]; then
     if [ -d "${ODOO_ROOT}" ]; then
+        #TODO: have bug here!
         read -p "odoo code exists, recreate?:y/n" result
         if [ ${result} == 'y' ]; then
             echo "------removing odoo code------"
@@ -129,7 +130,6 @@ read -p "want install or reinstall odoo?:y/n " result
 if [ ${result} == 'y' ]; then
     # install dependence
     echo '------Install External Python Egg------'
-    easy_install egenix-mx-base geoip pyPdf
     pip install ${SEPERATE_PIP_INSTALL}
     echo 'complete......'
     # install odoo
